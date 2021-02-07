@@ -1,0 +1,8 @@
+checkpoints
+video_samples
+moving
+temp
+__pycache__
+.vscode
+.ipynb_checkpoints
+evaluation/pfnet/chainer/models/conv3d_deepnetA_ucf.npz
