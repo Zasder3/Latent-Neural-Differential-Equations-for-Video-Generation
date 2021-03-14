@@ -32,3 +32,22 @@ class UCF101(data.Dataset):
                       mov_info.start + offset + self.n_frames]
         x = self._crop_center(x)
         return torch.tensor((x - 128.0) / 128.0, dtype=torch.float)
+
+
+class UCF101Images(UCF101):
+    def __init__(self, h5path, config_path):
+        super().__init__(h5path, config_path)
+
+    def _crop_center(self, x):
+        x = x[:, :, 10:10+self.img_size]
+        assert x.shape[1] == self.img_size
+        assert x.shape[2] == self.img_size
+        return x
+
+    def __getitem__(self, i):
+        mov_info = self.conf.loc[self.ind[i]]
+        length = mov_info.end - mov_info.start
+        offset = np.random.randint(length)
+        x = self.dset[mov_info.start + offset]
+        x = self._crop_center(x)
+        return torch.tensor((x - 128.0) / 128.0, dtype=torch.float)

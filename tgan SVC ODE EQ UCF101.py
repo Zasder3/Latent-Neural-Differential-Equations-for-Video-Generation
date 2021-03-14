@@ -17,13 +17,12 @@ dset = "C:/Video Datasets/ucf101_64px_tgan/train.h5"
 
 
 def singular_value_clip(w):
-    with torch.no_grad():
-        dim = w.shape
-        if len(dim) > 2:
-            w = w.reshape(dim[0], -1)
-        u, s, v = torch.svd(w, some=True)
-        s[s > 1] = 1
-        return (u @ torch.diag(s) @ v.t()).view(dim)
+    dim = w.shape
+    if len(dim) > 2:
+        w = w.reshape(dim[0], -1)
+    u, s, v = torch.svd(w, some=True)
+    s[s > 1] = 1
+    return (u @ torch.diag(s) @ v.t()).view(dim)
 
 
 def genSamples(g, n=8, e=1):
@@ -61,19 +60,19 @@ def train():
     dg = dataGen()
     # gen model
     dis = VideoDiscriminator().cuda()
-    gen = VideoGenerator(dim=4096, linear=True, ode_fn=ODEFuncDeep).cuda()
+    gen = VideoGenerator(dim=978, linear=True, ode_fn=ODEFuncDeep).cuda()
     disOpt = torch.optim.RMSprop(dis.parameters(), lr=5e-5)
     genOpt = torch.optim.RMSprop(gen.parameters(), lr=5e-5)
 
     # resume training
-    state_dicts = torch.load(f'checkpoints/{path}/state_normal16000.ckpt')
+    state_dicts = torch.load(f'checkpoints/{path}/state_normal61000.ckpt')
     start_epoch = state_dicts['epoch'] + 1
 
     gen.load_state_dict(state_dicts['model_state_dict'][0])
     dis.load_state_dict(state_dicts['model_state_dict'][1])
     genOpt.load_state_dict(state_dicts['optimizer_state_dict'][0])
     disOpt.load_state_dict(state_dicts['optimizer_state_dict'][1])
-    train
+    # train
     # isScores = []
     isScores = list(np.load('tgan_svc_ode_eq_inception.npy'))
     for epoch in tqdm(range(start_epoch, epochs)):
@@ -105,15 +104,15 @@ def train():
         if epoch % 5 == 0:
             for module in list(dis.model3d.children()) + [dis.conv2d]:
                 # discriminator only contains Conv3d, BatchNorm3d, and ReLU
-                if type(module) == nn.Conv3d or type(module) == nn.Conv2d:
-                    module.weight.data = singular_value_clip(module.weight)
-                elif type(module) == nn.BatchNorm3d:
-                    with torch.no_grad():
+                with torch.no_grad():
+                    if type(module) == nn.Conv3d or type(module) == nn.Conv2d:
+                        module.weight.copy_(singular_value_clip(module.weight))
+                    elif type(module) == nn.BatchNorm3d:
                         gamma = module.weight.data
                         std = torch.sqrt(module.running_var)
                         gamma[gamma > std] = std[gamma > std]
                         gamma[gamma < 0.01 * std] = 0.01 * std[gamma < 0.01 * std]
-                        module.weight.data = gamma
+                        module.weight.copy_(gamma)
 
             if epoch % 100 == 0:
                 genSamples(gen, e=epoch)

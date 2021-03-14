@@ -6,7 +6,7 @@ from ucf101.UCF101DatasetTGAN import UCF101
 from models.tgan import VideoDiscriminator
 from models.tgan_ode import VideoGenerator, ODEFuncDeep
 from evaluation_metrics import calculate_inception_score
-from tqdm.gui import tqdm
+from tqdm import tqdm
 
 epochs = 100000
 batch_size = 32
@@ -66,7 +66,7 @@ def train():
     genOpt = torch.optim.RMSprop(gen.parameters(), lr=5e-5)
 
     # resume training
-    state_dicts = torch.load(f'checkpoints/{path}/state_normal86000.ckpt')
+    state_dicts = torch.load(f'checkpoints/{path}/state_normal93000.ckpt')
     start_epoch = state_dicts['epoch'] + 1
 
     gen.load_state_dict(state_dicts['model_state_dict'][0])
@@ -99,7 +99,7 @@ def train():
         gen_loss.backward()
         genOpt.step()
         # log results and clip svds
-        print('Epoch', epoch, 'Dis', dis_loss.item(), 'Gen', gen_loss.item())
+        # print('Epoch', epoch, 'Dis', dis_loss.item(), 'Gen', gen_loss.item())
         if epoch % 5 == 0:
             for module in list(dis.model3d.children()) + [dis.conv2d]:
                 # discriminator only contains Conv3d, BatchNorm3d, and ReLU

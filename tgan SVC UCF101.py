@@ -64,7 +64,7 @@ def train():
     genOpt = torch.optim.RMSprop(gen.parameters(), lr=5e-5)
 
     # resume training
-    state_dicts = torch.load(f'checkpoints/{path}/state_normal73000.ckpt')
+    state_dicts = torch.load(f'checkpoints/{path}/state_normal99999.ckpt')
     start_epoch = state_dicts['epoch'] + 1
 
     gen.load_state_dict(state_dicts['model_state_dict'][0])
@@ -75,6 +75,7 @@ def train():
     # isScores = []
     isScores = list(np.load('tgan_svc_inception.npy'))
     for epoch in tqdm(range(start_epoch, epochs)):
+        assert gen.training
         # discriminator
         disOpt.zero_grad()
         real = next(dg).cuda()
@@ -125,12 +126,17 @@ def train():
                                 'optimizer_state_dict': [genOpt.state_dict(),
                                                         disOpt.state_dict()]},
                             f'checkpoints/{path}/state_normal{epoch}.ckpt')
-    torch.save({'epoch': epoch,
-                'model_state_dict': [gen.state_dict(),
-                                     dis.state_dict()],
-                'optimizer_state_dict': [genOpt.state_dict(),
-                                         disOpt.state_dict()]},
-               f'checkpoints/{path}/state_normal{epoch}.ckpt')
+    gen.cpu()
+    isScores.append(calculate_inception_score(gen,zdim=100, test=False))
+    print(isScores[-1])
+    np.save('tgan_svc_inception.npy', isScores)
+    gen.cuda()
+    # torch.save({'epoch': epoch,
+    #             'model_state_dict': [gen.state_dict(),
+    #                                  dis.state_dict()],
+    #             'optimizer_state_dict': [genOpt.state_dict(),
+    #                                      disOpt.state_dict()]},
+    #            f'checkpoints/{path}/state_normal{epoch}.ckpt')
 
 
 if __name__ == '__main__':

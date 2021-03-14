@@ -67,7 +67,7 @@ def train():
     genOpt = torch.optim.RMSprop(gen.parameters(), lr=5e-5)
 
     # resume training
-    state_dicts = torch.load(f'checkpoints/{path}/state_normal94000.ckpt')
+    state_dicts = torch.load(f'checkpoints/{path}/state_normal91000.ckpt')
     start_epoch = state_dicts['epoch'] + 1
 
     gen.load_state_dict(state_dicts['model_state_dict'][0])
@@ -78,6 +78,7 @@ def train():
     # isScores = []
     isScores = list(np.load('tgan_svc_ode_inception.npy'))
     for epoch in tqdm(range(start_epoch, epochs)):
+        assert gen.training
         # discriminator
         disOpt.zero_grad()
         real = next(dg).cuda()

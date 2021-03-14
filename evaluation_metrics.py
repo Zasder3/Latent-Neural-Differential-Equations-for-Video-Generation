@@ -7,7 +7,7 @@ from evaluation.c3d_ft import C3DVersion1
 from tqdm import tqdm
 
 
-def calculate_inception_score(gen, n_samples=2048, batch_size=32, test=True, zdim=256, reuse=False):
+def calculate_inception_score(gen, n_samples=2048, batch_size=32, test=True, zdim=256, moco=False, reuse=False):
     # generate samples
     batches = n_samples // batch_size
     if not reuse:
@@ -18,9 +18,12 @@ def calculate_inception_score(gen, n_samples=2048, batch_size=32, test=True, zdi
                 z = torch.rand((batch_size, zdim), device='cuda')*2-1
                 if test:
                     s = gen(z, test=True).cpu().detach().numpy()
+                elif moco:
+                    s = gen.sample_videos(batch_size)[0].cpu().detach().numpy()
                 else:
                     s = gen(z).cpu().detach().numpy()
             np.save(f'temp/vid{i}.npy', s)
+        gen.train()
     del gen
     torch.cuda.empty_cache()
 
