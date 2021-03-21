@@ -67,19 +67,19 @@ def train():
     loss = nn.BCEWithLogitsLoss()
 
     # resume training
-    state_dicts = torch.load(f'checkpoints/{path}/state_normal74000.ckpt')
-    start_epoch = state_dicts['epoch'] + 1
+    # state_dicts = torch.load(f'checkpoints/{path}/state_normal74000.ckpt')
+    # start_epoch = state_dicts['epoch'] + 1
 
-    gen.load_state_dict(state_dicts['model_state_dict'][0])
-    disVid.load_state_dict(state_dicts['model_state_dict'][1])
-    disImg.load_state_dict(state_dicts['model_state_dict'][2])
-    genOpt.load_state_dict(state_dicts['optimizer_state_dict'][0])
-    disVidOpt.load_state_dict(state_dicts['optimizer_state_dict'][1])
-    disImgOpt.load_state_dict(state_dicts['optimizer_state_dict'][2])
+    # gen.load_state_dict(state_dicts['model_state_dict'][0])
+    # disVid.load_state_dict(state_dicts['model_state_dict'][1])
+    # disImg.load_state_dict(state_dicts['model_state_dict'][2])
+    # genOpt.load_state_dict(state_dicts['optimizer_state_dict'][0])
+    # disVidOpt.load_state_dict(state_dicts['optimizer_state_dict'][1])
+    # disImgOpt.load_state_dict(state_dicts['optimizer_state_dict'][2])
 
     # train
-    # isScores = []
-    isScores = list(np.load('mocogan_ode_inception.npy'))
+    isScores = []
+    # isScores = list(np.load('mocogan_ode_inception.npy'))
     for epoch in tqdm(range(start_epoch, epochs)):
         # image discriminator
         disImgOpt.zero_grad()
