@@ -9,7 +9,7 @@ class UCF101(data.Dataset):
     def __init__(self, h5path, config_path):
         self.h5file = h5py.File(h5path, 'r')
         self.dset = self.h5file['image']
-        self.conf = pd.read_pickle(config_path)
+        self.conf = pd.read_json(config_path)
         self.ind = self.conf.index.tolist()
         self.n_frames = 16
         self.img_size = 64

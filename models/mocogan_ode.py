@@ -39,9 +39,9 @@ class VideoGenerator(mocogan.VideoGenerator):
         else:
             self.ode_fn = ode_fn(dim=dim_z_motion)
         self.linear = nn.Sequential(
-                nn.Linear(dim_z_motion, 512),
+                nn.Linear(dim_z_motion, 64),
                 nn.LeakyReLU(0.2),
-                nn.Linear(512, dim_z_motion),
+                nn.Linear(64, dim_z_motion),
                 nn.LeakyReLU(0.2)
                 )
 

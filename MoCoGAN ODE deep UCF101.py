@@ -152,6 +152,5 @@ def train():
     print(isScores[-1])
 
 
-
 if __name__ == '__main__':
     train()
