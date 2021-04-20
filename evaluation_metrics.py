@@ -61,7 +61,6 @@ def calculate_inception_score(gen, n_samples=2048, batch_size=32, test=True, zdi
     out = np.concatenate(out, axis=0)
     np.save('temp/out.npy', out)
     assert out.shape[0] == n_samples
-    print(out.shape)
 
     # find score
     eps = 1e-7
@@ -77,10 +76,10 @@ def calculate_inception_score(gen, n_samples=2048, batch_size=32, test=True, zdi
 
 def calculate_inception_score_confidence(gen, n_samples=2048, batch_size=32,
                                          iterations=10, test=True, zdim=256,
-                                         reuse=False):
+                                         moco=False, reuse=False):
     scores = np.empty([iterations])
     for i in tqdm(range(iterations)):
-        scores[i] = calculate_inception_score(gen, n_samples, batch_size, test, zdim, reuse)
+        scores[i] = calculate_inception_score(gen, n_samples, batch_size, test, zdim, moco, reuse)
         print(scores[i])
 
     return scores.mean(), scores.std()

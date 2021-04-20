@@ -9,7 +9,7 @@ if __name__ == '__main__':
     # gen model
     gen = VideoGenerator(linear=True)
 
-    state_dicts = torch.load(f'checkpoints/{path}/state_normal82000.ckpt')
+    state_dicts = torch.load(f'checkpoints/{path}/state_normal97000.ckpt')
 
     gen.load_state_dict(state_dicts['model_state_dict'][0])
     gen.cpu()

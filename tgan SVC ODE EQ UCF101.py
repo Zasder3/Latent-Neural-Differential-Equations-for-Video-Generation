@@ -12,17 +12,18 @@ epochs = 100000
 batch_size = 32
 path = 'ucf101/tgan_svc_ode_eq'
 start_epoch = 0
-conf = "C:/Video Datasets/UCF101_tgan/ucf101_train_pd.pkl"
-dset = "C:/Video Datasets/ucf101_64px_tgan/train.h5"
+conf = "C:/Video Datasets/ucf101_64px/train.json"
+dset = "C:/Video Datasets/ucf101_64px/train.h5"
 
 
 def singular_value_clip(w):
-    dim = w.shape
-    if len(dim) > 2:
-        w = w.reshape(dim[0], -1)
-    u, s, v = torch.svd(w, some=True)
-    s[s > 1] = 1
-    return (u @ torch.diag(s) @ v.t()).view(dim)
+    with torch.no_grad():
+        dim = w.shape
+        if len(dim) > 2:
+            w = w.reshape(dim[0], -1)
+        u, s, v = torch.linalg.svd(w, full_matrices=False)
+        s[s > 1] = 1
+        return (u @ torch.diag(s) @ v).view(dim)
 
 
 def genSamples(g, n=8, e=1):
@@ -65,16 +66,16 @@ def train():
     genOpt = torch.optim.RMSprop(gen.parameters(), lr=5e-5)
 
     # resume training
-    state_dicts = torch.load(f'checkpoints/{path}/state_normal61000.ckpt')
-    start_epoch = state_dicts['epoch'] + 1
+    # state_dicts = torch.load(f'checkpoints/{path}/state_normal61000.ckpt')
+    # start_epoch = state_dicts['epoch'] + 1
 
-    gen.load_state_dict(state_dicts['model_state_dict'][0])
-    dis.load_state_dict(state_dicts['model_state_dict'][1])
-    genOpt.load_state_dict(state_dicts['optimizer_state_dict'][0])
-    disOpt.load_state_dict(state_dicts['optimizer_state_dict'][1])
+    # gen.load_state_dict(state_dicts['model_state_dict'][0])
+    # dis.load_state_dict(state_dicts['model_state_dict'][1])
+    # genOpt.load_state_dict(state_dicts['optimizer_state_dict'][0])
+    # disOpt.load_state_dict(state_dicts['optimizer_state_dict'][1])
     # train
-    # isScores = []
-    isScores = list(np.load('tgan_svc_ode_eq_inception.npy'))
+    isScores = []
+    # isScores = list(np.load('epoch_is/tgan_svc_ode_eq_inception.npy'))
     for epoch in tqdm(range(start_epoch, epochs)):
         # discriminator
         disOpt.zero_grad()
@@ -121,7 +122,7 @@ def train():
                     isScores.append(calculate_inception_score(gen, zdim=100,
                                                               test=False))
                     print(isScores[-1])
-                    np.save('tgan_svc_ode_eq_inception.npy', isScores)
+                    np.save('epoch_is/tgan_svc_ode_eq_inception.npy', isScores)
                     gen.cuda()
                     torch.save({'epoch': epoch,
                                 'model_state_dict': [gen.state_dict(),
@@ -132,7 +133,7 @@ def train():
     isScores.append(calculate_inception_score(gen, zdim=100,
                                               test=False))
     print(isScores[-1])
-    np.save('tgan_svc_ode_eq_inception.npy', isScores)
+    np.save('epoch_is/tgan_svc_ode_eq_inception.npy', isScores)
     torch.save({'epoch': epoch,
                 'model_state_dict': [gen.state_dict(),
                                      dis.state_dict()],

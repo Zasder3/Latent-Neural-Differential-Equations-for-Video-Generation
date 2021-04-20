@@ -12,8 +12,8 @@ epochs = 100000
 batch_size = 32
 path = 'ucf101/mocogan_ode'
 start_epoch = 0
-conf = "C:/Video Datasets/UCF101_tgan/ucf101_train_pd.pkl"
-dset = "C:/Video Datasets/ucf101_64px_tgan/train.h5"
+conf = "C:/Video Datasets/ucf101_64px/train.json"
+dset = "C:/Video Datasets/ucf101_64px/train.h5"
 
 
 def genSamples(g, n=8, e=1):
@@ -67,7 +67,7 @@ def train():
     loss = nn.BCEWithLogitsLoss()
 
     # resume training
-    state_dicts = torch.load(f'checkpoints/{path}/state_normal74000.ckpt')
+    state_dicts = torch.load(f'checkpoints/{path}/state_normal91000.ckpt')
     start_epoch = state_dicts['epoch'] + 1
 
     gen.load_state_dict(state_dicts['model_state_dict'][0])
@@ -79,7 +79,7 @@ def train():
 
     # train
     # isScores = []
-    isScores = list(np.load('mocogan_ode_inception.npy'))
+    isScores = list(np.load('epoch_is/mocogan_ode_inception.npy'))
     for epoch in tqdm(range(start_epoch, epochs)):
         # image discriminator
         disImgOpt.zero_grad()
@@ -128,7 +128,7 @@ def train():
                 isScores.append(calculate_inception_score(gen, test=False,
                                                           moco=True))
                 print(isScores[-1])
-                np.save('mocogan_ode_inception.npy', isScores)
+                np.save('epoch_is/mocogan_ode_inception.npy', isScores)
                 gen.cuda()
                 torch.save({'epoch': epoch,
                             'model_state_dict': [gen.state_dict(),
@@ -148,7 +148,7 @@ def train():
                f'checkpoints/{path}/state_normal{epoch}.ckpt')
     isScores.append(calculate_inception_score(gen, test=False,
                                               moco=True))
-    np.save('mocogan_ode_inception.npy', isScores)
+    np.save('epcoh_is/mocogan_ode_inception.npy', isScores)
     print(isScores[-1])
 
 

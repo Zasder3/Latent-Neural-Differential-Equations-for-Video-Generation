@@ -4,16 +4,20 @@ import numpy as np
 from skvideo import io
 from ucf101.UCF101DatasetTGAN import UCF101
 from models.tgan import VideoDiscriminator
-from models.tgan_ode import VideoGenerator, ODEFuncDeep
+from models.tgan_ode import VideoGeneratorNOODE
 from evaluation_metrics import calculate_inception_score
 from tqdm import tqdm
+from pathlib import Path
 
 epochs = 100000
 batch_size = 32
-path = 'ucf101/tgan_svc_ode_deep'
+path = 'ucf101/tgan_svc_ode_2'
 start_epoch = 0
 conf = "C:/Video Datasets/ucf101_64px/train.json"
 dset = "C:/Video Datasets/ucf101_64px/train.h5"
+
+Path('video_samples/' + path).mkdir(parents=True, exist_ok=True)
+Path('checkpoints/' + path).mkdir(parents=True, exist_ok=True)
 
 
 def singular_value_clip(w):
@@ -61,7 +65,7 @@ def train():
     dg = dataGen()
     # gen model
     dis = VideoDiscriminator().cuda()
-    gen = VideoGenerator(linear=True, ode_fn=ODEFuncDeep).cuda()
+    gen = VideoGeneratorNOODE(linear=True, order=2).cuda()
     disOpt = torch.optim.RMSprop(dis.parameters(), lr=5e-5)
     genOpt = torch.optim.RMSprop(gen.parameters(), lr=5e-5)
 
@@ -120,7 +124,7 @@ def train():
                     isScores.append(calculate_inception_score(gen, zdim=100,
                                                               test=False))
                     print(isScores[-1])
-                    np.save('epoch_is/tgan_svc_ode_deep_inception.npy', isScores)
+                    np.save('epoch_is/tgan_svc_ode_2_inception.npy', isScores)
                     gen.cuda()
                     torch.save({'epoch': epoch,
                                 'model_state_dict': [gen.state_dict(),
@@ -131,7 +135,7 @@ def train():
     isScores.append(calculate_inception_score(gen, zdim=100,
                                               test=False))
     print(isScores[-1])
-    np.save('epoch_is/tgan_svc_ode_deep_inception.npy', isScores)
+    np.save('epoch_is/tgan_svc_ode_2_inception.npy', isScores)
     torch.save({'epoch': epoch,
                 'model_state_dict': [gen.state_dict(),
                                      dis.state_dict()],
