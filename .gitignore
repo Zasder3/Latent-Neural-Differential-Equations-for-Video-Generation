@@ -2,7 +2,14 @@ checkpoints
 video_samples
 moving
 temp
+epoch_is
+results
 __pycache__
+eval_files
 .vscode
 .ipynb_checkpoints
 evaluation/pfnet/chainer/models/conv3d_deepnetA_ucf.npz
+evaluation/fid_mean.npy
+evaluation/fid_cov.npy
+UCF101 Sample.ipynb
+DOCKER COMMANDS.txt

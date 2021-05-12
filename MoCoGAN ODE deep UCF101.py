@@ -10,7 +10,7 @@ from tqdm import tqdm
 
 epochs = 100000
 batch_size = 32
-path = 'ucf101/mocogan_ode'
+path = 'ucf101/mocogan_ode_deep'
 start_epoch = 0
 conf = "C:/Video Datasets/ucf101_64px/train.json"
 dset = "C:/Video Datasets/ucf101_64px/train.h5"
