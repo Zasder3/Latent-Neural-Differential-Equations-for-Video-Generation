@@ -12,4 +12,5 @@ evaluation/pfnet/chainer/models/conv3d_deepnetA_ucf.npz
 evaluation/fid_mean.npy
 evaluation/fid_cov.npy
 UCF101 Sample.ipynb
+ucf101_grid.gif
 DOCKER COMMANDS.txt
