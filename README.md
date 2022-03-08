@@ -3,6 +3,8 @@
 # Latent Neural Differential Equations for Video Generation
 Exploring the usage of Neural O/SDEs for the evolution of latent variables in videos.
 
+This code was written while I was in high school, so sorry for the many cleanliness issues that brings. For fear of breaking the code, I have chosen not to refactor the scripts, and instead offer explanations to some of the confusing parts. 
+
 ## Data
 
 To prepare your data first download UCF101, then use the file `ucf101/make_ucf101_tgan.py`
